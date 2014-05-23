@@ -1,10 +1,12 @@
 package PHPBB {
-	import flash.events.EventDispatcher;
+	import flash.events.TimerEvent;
 	import mx.utils.StringUtil;
 
 	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
+	import flash.utils.Timer;
 	/**
 	 * @author iggyvolz
 	 */
@@ -22,14 +24,21 @@ package PHPBB {
 			number=num;
 			contents; // Load contents
 		}
-		private function loadContentsA():void
+		
+		private function loadContentsA():void {
+			var timer:Timer=new Timer(1000);
+			timer.addEventListener(TimerEvent.TIMER,loadContentsB);
+			timer.start();
+		}
+		
+		private function loadContentsB(event:Event):void
 		{
 			var loader:URLLoader=new URLLoader();
-			loader.addEventListener(Event.COMPLETE,loadContentsB);
+			loader.addEventListener(Event.COMPLETE,loadContentsC);
 			loader.load(new URLRequest(url));
 		}
 
-		private function loadContentsB(event : Event) : void {
+		private function loadContentsC(event : Event) : void {
 			var html:String=event.target.data as String;
 			html=html.split("<div class=\"postbody\">")[1];
 			html=html.split("<dl class=\"postprofile\"")[0];
