@@ -10,7 +10,7 @@ package PHPBB {
 			parent=forum;
 			number=num;
 		}
-		public function post(pnum:uint)
+		public function post(pnum:uint):Post
 		{
 			return new Post(this,pnum);
 		}

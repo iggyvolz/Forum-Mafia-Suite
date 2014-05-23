@@ -1,14 +1,90 @@
 package PHPBB {
+	import flash.events.EventDispatcher;
+	import mx.utils.StringUtil;
+
+	import flash.events.Event;
+	import flash.net.URLLoader;
+	import flash.net.URLRequest;
 	/**
 	 * @author iggyvolz
 	 */
-	public class Post {
+	public class Post extends EventDispatcher {
 		public var parent:Topic;
 		public var number:uint;
+		private var ready:Boolean=false;
+		private var _author:String; // cache response
+		private var _text:String; // cache response
+		private var _url:String; // cache response
+		private var _contents:String; // cache response
 		public function Post(topic:Topic,num:uint):void
 		{
 			parent=topic;
 			number=num;
+			contents; // Load contents
+		}
+		private function loadContentsA():void
+		{
+			var loader:URLLoader=new URLLoader();
+			loader.addEventListener(Event.COMPLETE,loadContentsB);
+			loader.load(new URLRequest(url));
+		}
+
+		private function loadContentsB(event : Event) : void {
+			var html:String=event.target.data as String;
+			html=html.split("<div class=\"postbody\">")[1];
+			html=html.split("<dl class=\"postprofile\"")[0];
+			html=StringUtil.trim(html);
+			_contents=html;
+			ready=true;
+			dispatchEvent(new Event(Event.COMPLETE));
+		}
+		
+		private function get contents():String
+		{
+			if(_contents!=null)
+			{
+				return _contents;
+			}
+			loadContentsA();
+			return null;
+		}
+		public function get url():String
+		{
+			if(_url!=null)
+			{
+				return _url;
+			}
+			_url=parent.parent.parent.url+"/viewtopic.php?f="+parent.parent.number.toString()+"&t="+parent.number.toString()+"&start="+number.toString();
+			return _url;
+		}
+		public function get author():String
+		{
+			if(!ready)
+			{
+				return null;
+			}
+			if(_author!=null)
+			{
+				return _author;
+			}
+			_author=contents.split("<p class=\"author\">")[1];
+			_author=_author.split("<strong>")[1];
+			_author=_author.split("<a href")[1];
+			_author=_author.split(">")[1];
+			_author=_author.split("</a")[0];
+			return _author;
+		}
+		public function get text():String
+		{
+			if(!ready)
+			{
+				return null;
+			}
+			if(_text!=null)
+			{
+				return _text;
+			}
+			return _text;
 		}
 	}
 }
