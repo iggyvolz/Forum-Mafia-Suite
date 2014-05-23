@@ -84,6 +84,65 @@ package PHPBB {
 			{
 				return _text;
 			}
+			_text=contents.split("<div class=\"content\">")[1];
+			_text=_text.split("<div id=\"sig")[0];
+			_text=StringUtil.trim(_text);
+			var noQuotes:String="";
+			var tmpText:String="";
+			var quoteLevel:uint=0;
+			var i:uint;
+			while(_text.indexOf("<blockquote>")!=-1 || _text.indexOf("</blockquote>")!=-1)
+			{
+				
+				if(_text.indexOf("<blockquote>")!=-1 && _text.indexOf("<blockquote>")<_text.indexOf("</blockquote>"))
+				{
+					
+					if(_text.indexOf("<blockquote>")!=0&&quoteLevel==0)
+					{
+						
+						noQuotes+=_text.split("<blockquote>")[0];
+					}
+					else
+					{
+						
+					}
+					quoteLevel++;
+					tmpText="";
+					
+					for(i=1;i<_text.split("<blockquote>").length;i++)
+					{
+						if(i!=1)
+						{
+							tmpText+="<blockquote>";
+						}
+						
+						tmpText+=_text.split("<blockquote>")[i];
+						
+					}
+					_text=tmpText;
+				}
+				else
+				{
+					
+					quoteLevel--;
+					tmpText="";
+					for(i=1;i<_text.split("</blockquote>").length;i++)
+					{
+						if(i!=1)
+						{
+							tmpText+="</blockquote>";
+						}
+						tmpText+=_text.split("</blockquote>")[i];
+						
+					}
+					_text=tmpText;
+				}
+			}
+			while(_text.slice(0,6)=="<br />")
+			{
+				
+				_text=_text.slice(6,text.length);
+			}
 			return _text;
 		}
 	}
