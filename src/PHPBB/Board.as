@@ -3,10 +3,14 @@ package PHPBB{
 	 * @author iggyvolz
 	 */
 	public class Board {
-		private var URL:String;
+		public var URL:String;
 		public function Board(url:String):void
 		{
 			URL=url;
+		}
+		public function forum(fnum:uint):Forum
+		{
+			return new Forum(this,fnum);
 		}
 	}
 }
